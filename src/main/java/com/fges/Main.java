@@ -29,8 +29,8 @@ public class Main {
         Options cliOptions = new Options();
         CommandLineParser parser = new DefaultParser();
 
-        cliOptions.addRequiredOption("s", "source", true, "File containing the grocery list");
-
+        cliOptions.addRequiredOption("s","source", true, "File containing the grocery list");
+        cliOptions.addRequiredOption("f","format", true, "format of the file containing the list");
         CommandLine cmd;
         try {
             cmd = parser.parse(cliOptions, args);
