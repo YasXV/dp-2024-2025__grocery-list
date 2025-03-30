@@ -1,0 +1,25 @@
+Rapport du projet
+But du projet
+Ce projet permet de gérer une liste de courses à partir d'un fichier (JSON ou CSV) via une interface en ligne de commande. L'utilisateur peut spécifier un fichier source et un format, puis exécuter différentes commandes sur la liste.
+
+Explication des classes principales
+Main : C'est le point d'entrée du programme. Il utilise MyOptions pour analyser les arguments de la ligne de commande et appelle GroceryService pour exécuter les actions demandées.
+
+MyOptions :
+
+Gère l'analyse des arguments de la ligne de commande en utilisant Apache Commons CLI.
+
+Vérifie la présence obligatoire du fichier source (-s).
+
+Définit le format par défaut (json si -f n'est pas précisé).
+
+Extrait la commande principale et ses arguments supplémentaires.
+
+GroceryService :
+
+Charge la liste des courses depuis un fichier JSON ou CSV.
+
+Exécute des actions comme l'affichage, l'ajout ou la suppression d'éléments.
+
+Erreur rencontrée
+L'erreur "Java HotSpot(TM) 64-Bit Server VM warning: Ignoring option --illegal-access=permit; support was removed in 17.0" signifie que l'option --illegal-access=permit a été supprimée à partir de Java 17. Cette option permettait d'accéder à des API internes de Java, mais n'est plus supportée.
