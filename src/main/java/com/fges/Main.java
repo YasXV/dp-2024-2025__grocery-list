@@ -2,6 +2,9 @@ package com.fges;
 
 import java.io.IOException;
 
+/**
+ * Main application entry point
+ */
 public class Main {
     public static void main(String[] args) throws IOException {
         System.exit(exec(args));
@@ -15,14 +18,15 @@ public class Main {
         }
 
         try {
-            //on instancie le sevice
+            // Create grocery service with the appropriate DAO
             GroceryService service = new GroceryService(
                     options.getSourceFile(),
-                    options.getFormat()
+                    options.getFormat(),
+                    options.getCategory()
             );
 
+            // Execute the command
             return service.executeCommand(options.getCommand(), options.getCommandArgs());
-
         } catch (Exception e) {
             System.err.println("Error: " + e.getMessage());
             return 1;

@@ -1,54 +1,104 @@
 package com.fges;
 
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.*;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Handles command line options parsing
+ */
 public class MyOptions {
     private final Options options;
-    private final CommandLineParser parser;
-    private String sourceFile;
-    private String format = "json"; // Default format is JSON
+    private CommandLine cmd;
+
+    private String sourceFile = "groceries";
+    private String format = "json";
+    private String category = "default";
     private String command;
-    private List<String> commandArgs;
+    private List<String> commandArgs = new ArrayList<>();
 
     public MyOptions() {
-        this.options = new Options();
-        this.parser = new DefaultParser();
-        setupOptions();
+        options = new Options();
+
+        // Define options
+        options.addOption(Option.builder("f")
+                .longOpt("file")
+                .hasArg()
+                .desc("Source file name (default: groceries)")
+                .build());
+
+        options.addOption(Option.builder("t")
+                .longOpt("type")
+                .hasArg()
+                .desc("File format: json or csv (default: json)")
+                .build());
+
+        options.addOption(Option.builder("c")
+                .longOpt("category")
+                .hasArg()
+                .desc("Item category (default: default)")
+                .build());
+
+        options.addOption(Option.builder("h")
+                .longOpt("help")
+                .desc("Display help")
+                .build());
     }
 
-    private void setupOptions() {
-        options.addRequiredOption("s", "source", true, "File containing the grocery list");
-        options.addOption("f", "format", true, "Format of the file containing the list (json or csv)");
-    }
-
+    /**
+     * Parse command line arguments
+     * @param args Command line arguments
+     * @return True if parsing was successful, false otherwise
+     */
     public boolean parse(String[] args) {
+        CommandLineParser parser = new DefaultParser();
+        HelpFormatter formatter = new HelpFormatter();
+
         try {
-            CommandLine cmd = parser.parse(options, args);
-            sourceFile = cmd.getOptionValue("s");
+            cmd = parser.parse(options, args, true);
 
-            // Format is optional with default value "json"
-            if (cmd.hasOption("f")) {
-                format = cmd.getOptionValue("f");
-            }
-
-            List<String> positionalArgs = cmd.getArgList();
-            if (positionalArgs.isEmpty()) {
-                System.err.println("Missing Command");
+            // Check if help is requested
+            if (cmd.hasOption("h")) {
+                formatter.printHelp("grocery-manager", options);
                 return false;
             }
 
-            command = positionalArgs.get(0);
-            commandArgs = positionalArgs.subList(1, positionalArgs.size());
+            // Extract options
+            if (cmd.hasOption("f")) {
+                sourceFile = cmd.getOptionValue("f");
+            }
+
+            if (cmd.hasOption("t")) {
+                format = cmd.getOptionValue("t").toLowerCase();
+                if (!format.equals("json") && !format.equals("csv")) {
+                    System.err.println("Unsupported format: " + format);
+                    return false;
+                }
+            }
+
+            if (cmd.hasOption("c")) {
+                category = cmd.getOptionValue("c");
+            }
+
+            // Extract command and its arguments
+            List<String> argList = Arrays.asList(cmd.getArgs());
+            if (argList.isEmpty()) {
+                System.err.println("No command specified");
+                formatter.printHelp("grocery-manager", options);
+                return false;
+            }
+
+            command = argList.get(0);
+            if (argList.size() > 1) {
+                commandArgs = argList.subList(1, argList.size());
+            }
 
             return true;
-        } catch (ParseException ex) {
-            System.err.println("Fail to parse arguments: " + ex.getMessage());
+        } catch (ParseException e) {
+            System.err.println("Error parsing arguments: " + e.getMessage());
+            formatter.printHelp("grocery-manager", options);
             return false;
         }
     }
@@ -59,6 +109,10 @@ public class MyOptions {
 
     public String getFormat() {
         return format;
+    }
+
+    public String getCategory() {
+        return category;
     }
 
     public String getCommand() {

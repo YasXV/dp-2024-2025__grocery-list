@@ -1,0 +1,54 @@
+# Rapport : Mise à niveau du gestionnaire de liste d'épicerie
+
+## Nouveaux ajouts et corrections
+
+Notre application a été restructurée en suivant les principes SOLID, avec plusieurs améliorations clés :
+
+1. **Ajout de la classe MyOptions** : Implémentation d'un parseur d'arguments basé sur Apache Commons CLI pour une meilleure gestion des options et paramètres.
+
+2. **Structure de packages cohérente** : Organisation des classes dans des packages logiques (com.fges.dao pour les classes d'accès aux données).
+
+3. **Tests unitaires exhaustifs** : Couverture complète de toutes les classes avec de nouveaux tests unitaires pour toutes les fonctionnalités.
+
+4. **Correction des bugs** : Résolution des problèmes de variables non finales dans les lambdas et normalisation des noms de classes.
+
+5. **Support multi-format** : Implémentation robuste pour les formats JSON et CSV avec possibilité d'extension.
+
+## Architecture du système
+
+```
+            ┌───────────────┐
+            │     Main      │
+            └───────┬───────┘
+                    │
+                    ▼
+            ┌───────────────┐    parses    ┌───────────────┐
+            │ GroceryService│◄─────────────┤   MyOptions   │
+            └───────┬───────┘              └───────────────┘
+                    │
+                    │ uses
+                    ▼
+         ┌──────────────────┐  creates
+         │ GroceryDaoFactory│──────────┐
+         └──────────────────┘          │
+                                       ▼
+     ┌───────────────────────┐   ┌───────────────┐
+     │    «interface»        │   │  GroceryDao   │
+     │    GroceryDao         │◄──┤ Implementation │
+     └───────────────────────┘   └───────┬───────┘
+                                         │
+                     ┌───────────────────┴───────────────────┐
+                     ▼                                       ▼
+             ┌───────────────┐                     ┌───────────────┐
+             │ JsonGroceryDao│                     │ CsvGroceryDao │
+             └───────────────┘                     └───────────────┘
+```
+
+L'architecture respecte les principes SOLID :
+- **S**RP : Chaque classe a une responsabilité unique (DAO pour l'accès aux données, Factory pour la création, Service pour la logique)
+- **O**CP : Extensible pour ajouter de nouveaux formats sans modifier le code existant
+- **L**SP : Les implémentations DAO sont interchangeables
+- **I**SP : Interfaces cohérentes avec des méthodes bien définies
+- **D**IP : Les dépendances sont inversées, avec le GroceryService qui dépend de l'abstraction GroceryDao
+
+Tous ces changements ont été appuyés par des tests unitaires et d'intégration complets pour assurer la qualité et la robustesse du code.
